@@ -692,7 +692,7 @@ again:
 				}
 #endif
 
-				usb_interface = get_ccid_usb_interface(config_desc, &num);
+				usb_interface = get_ccid_usb_interface(readerID, config_desc, &num);
 				if (usb_interface == NULL)
 				{
 					libusb_free_config_descriptor(config_desc);
@@ -704,7 +704,7 @@ again:
 					continue;
 				}
 
-				device_descriptor = get_ccid_device_descriptor(usb_interface);
+				device_descriptor = get_ccid_device_descriptor(readerID, usb_interface);
 				if (NULL == device_descriptor)
 				{
 					libusb_free_config_descriptor(config_desc);
@@ -1229,7 +1229,7 @@ _ccid_descriptor *get_ccid_descriptor(unsigned int reader_index)
  *					get_ccid_device_descriptor
  *
  ****************************************************************************/
-const unsigned char *get_ccid_device_descriptor(const struct libusb_interface *usb_interface)
+const unsigned char *get_ccid_device_descriptor(const int readerID, const struct libusb_interface *usb_interface)
 {
 #ifdef O2MICRO_OZ776_PATCH
 	uint8_t last_endpoint;
@@ -1344,7 +1344,7 @@ uint8_t get_ccid_usb_device_address(int reader_index)
  *
  ****************************************************************************/
 /*@null@*/ const struct libusb_interface * get_ccid_usb_interface(
-	struct libusb_config_descriptor *desc, int *num)
+	const int readerID, struct libusb_config_descriptor *desc, int *num)
 {
 	const struct libusb_interface *usb_interface = NULL;
 	int i;

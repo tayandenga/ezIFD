@@ -34,9 +34,10 @@ status_t DisconnectUSB(unsigned int reader_index);
 
 #include <libusb.h>
 /*@null@*/ const struct libusb_interface *get_ccid_usb_interface(
-	struct libusb_config_descriptor *desc, int *num);
+	const int readerID, struct libusb_config_descriptor *desc, int *num);
 
-const unsigned char *get_ccid_device_descriptor(const struct libusb_interface *usb_interface);
+const unsigned char *get_ccid_device_descriptor(
+    const int readerID, const struct libusb_interface *usb_interface);
 
 uint8_t get_ccid_usb_bus_number(int reader_index);
 uint8_t get_ccid_usb_device_address(int reader_index);

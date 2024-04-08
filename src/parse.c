@@ -176,7 +176,8 @@ again:
 			continue;
 		}
 
-		usb_interface = get_ccid_usb_interface(config_desc, &num);
+		/* Use -1 as readerID to prevent patching. */
+		usb_interface = get_ccid_usb_interface(-1, config_desc, &num);
 		if (NULL == usb_interface)
 		{
 			(void)libusb_close(handle);
@@ -331,7 +332,7 @@ static bool ccid_parse_interface_descriptor(libusb_device_handle *handle,
 	(void)fprintf(fd, " bcdDevice: %X.%02X (firmware release?)\n",
 		desc.bcdDevice >> 8, desc.bcdDevice & 0xFF);
 
-	usb_interface_descriptor = get_ccid_usb_interface(config_desc, &num)->altsetting;
+	usb_interface_descriptor = get_ccid_usb_interface(-1, config_desc, &num)->altsetting;
 
 	(void)fprintf(fd, " bLength: %d\n", usb_interface_descriptor->bLength);
 
@@ -402,7 +403,8 @@ static bool ccid_parse_interface_descriptor(libusb_device_handle *handle,
 	else
 		(void)fprintf(fd, " iInterface: %s\n", buffer);
 
-	device_descriptor = get_ccid_device_descriptor(usb_interface);
+	/* Use -1 as readerID to prevent descriptor patching. */
+	device_descriptor = get_ccid_device_descriptor(-1, usb_interface);
 	if (NULL == device_descriptor)
 	{
 		(void)fprintf(fd, "\n  NOT A CCID DEVICE\n");
