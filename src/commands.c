@@ -84,7 +84,7 @@ static RESPONSECODE CmdXfrBlockTPDU_T1(unsigned int reader_index,
 	unsigned char rx_buffer[]);
 
 static unsigned int get_length(const unsigned char *buffer, _ccid_descriptor *ccid_descriptor);
-static void i2dw(int value, unsigned char *buffer);
+static void set_length(int value, unsigned char *buffer, _ccid_descriptor *ccid_descriptor);
 static unsigned int bei2i(unsigned char *buffer);
 
 
@@ -498,7 +498,7 @@ RESPONSECODE SecurePINVerify(unsigned int reader_index,
 		cmd[6] = (*ccid_descriptor->pbSeq)++;
 	}
 
-	i2dw(a - 10, cmd + 1);  /* CCID message length */
+	set_length(a - 10, cmd, ccid_descriptor);  /* CCID message length */
 
 	old_read_timeout = ccid_descriptor -> readTimeout;
 	ccid_descriptor -> readTimeout = max(90, TxBuffer[0]+10)*1000;	/* at least 90 seconds */
@@ -876,7 +876,7 @@ RESPONSECODE SecurePINModify(unsigned int reader_index,
 #endif
 
 	/* We know the size of the CCID message now */
-	i2dw(a - 10, cmd + 1);	/* command length (includes bPINOperation) */
+	set_length(a - 10, cmd, ccid_descriptor);	/* command length (includes bPINOperation) */
 
 	old_read_timeout = ccid_descriptor -> readTimeout;
 	ccid_descriptor -> readTimeout = max(90, TxBuffer[0]+10)*1000;	/* at least 90 seconds */
@@ -979,7 +979,7 @@ again:
 
 	bSeq = (*ccid_descriptor->pbSeq)++;
 	cmd_in[0] = 0x6B; /* PC_to_RDR_Escape */
-	i2dw(length_in - 10, cmd_in+1);	/* dwLength */
+	set_length(length_in - 10, cmd_in, ccid_descriptor); /* dwLength */
 	cmd_in[5] = ccid_descriptor->bCurrentSlotIndex;	/* slot number */
 	cmd_in[6] = bSeq;
 	cmd_in[7] = cmd_in[8] = cmd_in[9] = 0; /* RFU */
@@ -1396,7 +1396,7 @@ RESPONSECODE CCID_Transmit(unsigned int reader_index, unsigned int tx_length,
 #endif
 
 	cmd[0] = 0x6F; /* XfrBlock */
-	i2dw(tx_length, cmd+1);	/* APDU length */
+	set_length(tx_length, cmd, ccid_descriptor); /* APDU length */
 	cmd[5] = ccid_descriptor->bCurrentSlotIndex;	/* slot number */
 	cmd[6] = (*ccid_descriptor->pbSeq)++;
 	cmd[7] = bBWI;	/* extend block waiting timeout */
@@ -2321,7 +2321,7 @@ RESPONSECODE SetParameters(unsigned int reader_index, char protocol,
 
 	bSeq = (*ccid_descriptor->pbSeq)++;
 	cmd[0] = 0x61; /* SetParameters */
-	i2dw(length, cmd+1);	/* APDU length */
+	set_length(length, cmd, ccid_descriptor); /* APDU length */
 	cmd[5] = ccid_descriptor->bCurrentSlotIndex;	/* slot number */
 	cmd[6] = bSeq;
 	cmd[7] = protocol;	/* bProtocolNum */
@@ -2384,16 +2384,17 @@ static unsigned int get_length(const unsigned char *buffer, _ccid_descriptor *cc
 
 /*****************************************************************************
  *
- *					i2dw
+ *					set_length
+ *					Set length in CCID header
  *
  ****************************************************************************/
-static void i2dw(int value, unsigned char buffer[])
+static void set_length(int value, unsigned char *buffer, _ccid_descriptor *ccid_descriptor)
 {
-	buffer[0] = value & 0xFF;
-	buffer[1] = (value >> 8) & 0xFF;
-	buffer[2] = (value >> 16) & 0xFF;
-	buffer[3] = (value >> 24) & 0xFF;
-} /* i2dw */
+	buffer[1] = value & 0xFF;
+	buffer[2] = (value >> 8) & 0xFF;
+	buffer[3] = (value >> 16) & 0xFF;
+	buffer[4] = (value >> 24) & 0xFF;
+} /* set_length */
 
 /*****************************************************************************
 *
