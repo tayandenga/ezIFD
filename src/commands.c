@@ -97,7 +97,7 @@ RESPONSECODE CmdPowerOn(unsigned int reader_index, unsigned int * nlength,
 	unsigned char buffer[], int voltage)
 {
 	unsigned char cmd[10];
-	unsigned char resp[10 + MAX_ATR_SIZE];
+	unsigned char resp[10 + MAX_ATR_SIZE + 1];
 	int bSeq;
 	status_t res;
 	int count = 1;
@@ -105,6 +105,7 @@ RESPONSECODE CmdPowerOn(unsigned int reader_index, unsigned int * nlength,
 	int init_voltage;
 	RESPONSECODE return_value = IFD_SUCCESS;
 	_ccid_descriptor *ccid_descriptor = get_ccid_descriptor(reader_index);
+	int offset;
 
 #ifndef TWIN_SERIAL
 	if (PROTOCOL_ICCD_A == ccid_descriptor->bInterfaceProtocol)
@@ -288,13 +289,19 @@ again:
 	}
 
 	/* extract the ATR */
-	atr_len = get_length(resp, ccid_descriptor);	/* ATR length */
+	offset = 0;
+#ifdef ENABLE_EZUSB
+	/* EZUSB ATR response is prefixed with a 0x00. */
+	if (ccid_descriptor->ezusb)
+		offset = 1;
+#endif
+	atr_len = get_length(resp, ccid_descriptor)-offset;	/* ATR length */
 	if (atr_len > *nlength)
 		atr_len = *nlength;
 
 	*nlength = atr_len;
 
-	memcpy(buffer, resp+10, atr_len);
+	memcpy(buffer, resp+10+offset, atr_len);
 
 	return return_value;
 } /* CmdPowerOn */
@@ -2379,6 +2386,12 @@ int isCharLevel(int reader_index)
 static unsigned int get_length(const unsigned char *buffer, _ccid_descriptor *ccid_descriptor)
 {
 	unsigned int len = dw2i(buffer, 1); // At offset 1
+#ifdef ENABLE_EZUSB
+	/* Flip endianness */
+	if (ccid_descriptor->ezusb)
+		len = (len & 0x000000ff) << 24 | (len & 0x0000ff00) << 8 |
+			  (len & 0x00ff0000) >> 8  | (len & 0xff000000) >> 24;
+#endif
 	return len;
 } /* get_length */
 
@@ -2390,6 +2403,16 @@ static unsigned int get_length(const unsigned char *buffer, _ccid_descriptor *cc
  ****************************************************************************/
 static void set_length(int value, unsigned char *buffer, _ccid_descriptor *ccid_descriptor)
 {
+#ifdef ENABLE_EZUSB
+	if (ccid_descriptor->ezusb) {
+		/* Flip endianness */
+		buffer[1] = (value >> 24) & 0xFF;
+		buffer[2] = (value >> 16) & 0xFF;
+		buffer[3] = (value >> 8) & 0xFF;
+		buffer[4] = value & 0xFF;
+		return;
+	}
+#endif
 	buffer[1] = value & 0xFF;
 	buffer[2] = (value >> 8) & 0xFF;
 	buffer[3] = (value >> 16) & 0xFF;

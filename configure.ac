@@ -265,6 +265,14 @@ AC_ARG_ENABLE(zlp,
 AS_IF([test x$use_zlp = xyes],
 	[AC_DEFINE(ENABLE_ZLP, 1, [Enable Zero Length Packet patch])])
 
+# --enable-ezusb
+AC_ARG_ENABLE(ezusb,
+  AS_HELP_STRING([--enable-ezusb],[enable EZUSB/EZ100PU support]),
+  [ use_ezusb="${enableval}" ])
+
+AS_IF([test x$use_ezusb = xyes],
+	[AC_DEFINE(ENABLE_EZUSB, 1, [Enable EZUSB/EZ100PU support])])
+
 # --enable-strict
 AC_ARG_ENABLE(
 	[strict],

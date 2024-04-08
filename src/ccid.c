@@ -82,6 +82,13 @@ int ccid_open_hack_pre(unsigned int reader_index)
 			break;
 #endif
 
+#ifdef ENABLE_EZUSB
+		case CASTLE_EZUSB:
+			ccid_descriptor->ezusb = true;
+			DEBUG_INFO1("EZUSB workarounds");
+			break;
+#endif
+
 		case OZ776:
 		case OZ776_7772:
 			ccid_descriptor->dwMaxDataRate = 9600;

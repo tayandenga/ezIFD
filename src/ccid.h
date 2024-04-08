@@ -160,6 +160,13 @@ typedef struct
 	 */
 	bool zlp;
 #endif
+
+#ifdef ENABLE_EZUSB
+	/*
+	 * Enable fixups for ezusb
+	 */
+	bool ezusb;
+#endif
 } _ccid_descriptor;
 
 /* Features from dwFeatures */
@@ -263,6 +270,7 @@ typedef struct
 #define ACS_ACR1552				0x072F2303
 #define KAPELSE_KAPLIN2			0x29470105
 #define KAPELSE_KAPECV			0x29470112
+#define CASTLE_EZUSB			0x0CA60010 /* Not technically CCID compliant */
 
 #define VENDOR_KAPELSE 0x2947
 #define VENDOR_GEMALTO 0x08E6

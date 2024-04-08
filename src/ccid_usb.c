@@ -1223,6 +1223,32 @@ _ccid_descriptor *get_ccid_descriptor(unsigned int reader_index)
 	return &usbDevice[reader_index].ccid;
 } /* get_ccid_descriptor */
 
+#ifdef ENABLE_EZUSB
+/* ezusb: Imitates Castles EZCCID descriptor. */
+static const unsigned char ezusb_fake_descriptor[54] = {
+       0x36, 0x21,
+       0x00, 0x01, // bcdCCID
+       0x00, // bMaxSlotIndex
+       0x01, // bVoltageSupport (5.0V only?)
+       0x03, 0x00, 0x00, 0x00, // dwProtocols
+       0xFC, 0x0D, 0x00, 0x00, // dwDefaultClock
+       0xFC, 0x0D, 0x00, 0x00, // dwMaximumClock
+       0x01, // bNumClockSupported
+       0x80, 0x25, 0x00, 0x00, // dwDataRate
+       0x00, 0xC2, 0x01, 0x00, // dwMaxDataRate
+       0x0F, // bNumDataRatesSupported
+       252, 0x00, 0x00, 0x00, // dwMaxIFSD
+       0x00, 0x00, 0x00, 0x00, // dwSynchProtocols
+       0x00, 0x00, 0x00, 0x00, // dwMechanical
+       0x30, 0x01, 0x01, 0x00, // dwFeatures
+       (271-256), 0x01, 0x00, 0x00, // dwMaxCCIDMessageLength
+       0x00, // bClassGetResponse
+       0x00, // bClassEnvelope
+       0x00, 0x00, // wLcdLayout
+       0x00, // bPINSupport
+       0x01, // bMaxCCIDBusySlots
+};
+#endif
 
 /*****************************************************************************
  *
@@ -1233,6 +1259,12 @@ const unsigned char *get_ccid_device_descriptor(const int readerID, const struct
 {
 #ifdef O2MICRO_OZ776_PATCH
 	uint8_t last_endpoint;
+#endif
+
+#ifdef ENABLE_EZUSB
+	/* Use a fake descriptor for this device. */
+	if (readerID == CASTLE_EZUSB)
+		return ezusb_fake_descriptor;
 #endif
 
 	if (0 == usb_interface->num_altsetting) {
@@ -1361,6 +1393,11 @@ uint8_t get_ccid_usb_device_address(int reader_index)
 #ifdef ALLOW_PROPRIETARY_CLASS
 			|| (desc->interface[i].altsetting->bInterfaceClass == 0xff
 			&& 54 == desc->interface[i].altsetting->extra_length)
+#endif
+#ifdef ENABLE_EZUSB
+			/* On CASTLE_EZUSB, just use the first interface. */
+			|| (readerID == CASTLE_EZUSB && i == 0 &&
+			desc->interface[i].altsetting->bInterfaceClass == 0x00)
 #endif
 			)
 		{
