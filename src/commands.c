@@ -83,6 +83,7 @@ static RESPONSECODE CmdXfrBlockTPDU_T1(unsigned int reader_index,
 	unsigned int tx_length, unsigned char tx_buffer[], unsigned int *rx_length,
 	unsigned char rx_buffer[]);
 
+static unsigned int get_length(const unsigned char *buffer, _ccid_descriptor *ccid_descriptor);
 static void i2dw(int value, unsigned char *buffer);
 static unsigned int bei2i(unsigned char *buffer);
 
@@ -287,7 +288,7 @@ again:
 	}
 
 	/* extract the ATR */
-	atr_len = dw2i(resp, 1);	/* ATR length */
+	atr_len = get_length(resp, ccid_descriptor);	/* ATR length */
 	if (atr_len > *nlength)
 		atr_len = *nlength;
 
@@ -1045,7 +1046,7 @@ time_request:
 	}
 
 	/* copy the response */
-	length_out = dw2i(cmd_out, 1);
+	length_out = get_length(cmd_out, ccid_descriptor);
 	if (length_out > *RxLength)
 	{
 		length_out = *RxLength;
@@ -1610,14 +1611,14 @@ time_request:
 	}
 
 	/* we have read less (or more) data than the CCID frame says to contain */
-	if (length-10 != dw2i(cmd, 1))
+	if (length-10 != get_length(cmd, ccid_descriptor))
 	{
 		DEBUG_CRITICAL3("Can't read all data (%d out of %d expected)",
-			length-10, dw2i(cmd, 1));
+			length-10, get_length(cmd, ccid_descriptor));
 		return_value = IFD_COMMUNICATION_ERROR;
 	}
 
-	length = dw2i(cmd, 1);
+	length = get_length(cmd, ccid_descriptor);
 	if (length <= *rx_length)
 		*rx_length = length;
 	else
@@ -2368,6 +2369,18 @@ int isCharLevel(int reader_index)
 	return CCID_CLASS_CHARACTER == (get_ccid_descriptor(reader_index)->dwFeatures & CCID_CLASS_EXCHANGE_MASK);
 } /* isCharLevel */
 
+
+/*****************************************************************************
+ *
+ *					get_length:
+ *                  Get length from CCID header
+ *
+ ****************************************************************************/
+static unsigned int get_length(const unsigned char *buffer, _ccid_descriptor *ccid_descriptor)
+{
+	unsigned int len = dw2i(buffer, 1); // At offset 1
+	return len;
+} /* get_length */
 
 /*****************************************************************************
  *
