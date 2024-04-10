@@ -1,1 +1,1 @@
-EXTRA_DIST = supported_readers.txt
+EXTRA_DIST = supported_readers_ez.txt

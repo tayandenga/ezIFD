@@ -1,26 +1,10 @@
 INSTALLATION PROCEDURE
 ======================
 
-Installation from source:
-"""""""""""""""""""""""""
-
-Get the ccid-x.y.z.tar.bz2 archive from https://ccid.apdu.fr/files/ and do:
-
-$ tar xjvf ccid-x.y.z.tar.bz2
-$ cd ccid-x.y.z
-$ ./configure
-$ make
-$ sudo make install
-
-By default pcscd and my ccid driver use /usr/local/pcsc/drivers/ as
-directory for hotplug drivers. The ./configure script try to get the
-directory used by pcscd using 'pkg-config libpcsclite --variable=usbdropdir'
-So you should not have to use the --enable-usbdropdir=DIR argument.
-
 Installation from git repo:
 """""""""""""""""""""""""""
 
-$ git clone --recursive https://github.com/LudovicRousseau/CCID.git
+$ git clone --recursive https://github.com/drinkcat/ezCCID.git
 $ cd CCID
 $ autoreconf --install
 $ ./configure
@@ -126,7 +110,7 @@ Test procedure:
   Bus 001 Device 048: ID 08e6:4433 Gemplus
 
   Look for 08E6 (ifdVendorID) and 4433 (ifdProductID) in
-  /usr/local/pcsc/drivers/ifd-ccid.bundle/Contents/Info.plist
+  /usr/local/pcsc/drivers/ifd-ezccid.bundle/Contents/Info.plist
   Of course your numbers will be different.
 
   If you can't find them add them (if you know what you do) and/or mail me.

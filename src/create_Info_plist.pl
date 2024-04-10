@@ -39,7 +39,7 @@ GetOptions(
 
 if ($#ARGV < 1)
 {
-	print "usage: $0 supported_readers.txt Info.plist
+	print "usage: $0 supported_readers_ez.txt Info.plist
 	--target=$target
 	--version=$version\n";
 	exit;

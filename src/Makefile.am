@@ -83,8 +83,8 @@ install: $(LIBS_TO_INSTALL)
 
 INSTALL_UDEV_RULE_FILE=@/bin/echo "***************" ; echo "copy the src/92_pcscd_ccid.rules file in udev directory (/etc/udev/rules.d/)" ; /bin/echo "***************"
 
-Info.plist: Info.plist.src $(srcdir)/../readers/supported_readers.txt
-	$(srcdir)/create_Info_plist.pl $(srcdir)/../readers/supported_readers.txt $(srcdir)/Info.plist.src --target=$(CCID_LIB) --version=$(VERSION) $(NOCLASS) > Info.plist
+Info.plist: Info.plist.src $(srcdir)/../readers/supported_readers_ez.txt
+	$(srcdir)/create_Info_plist.pl $(srcdir)/../readers/supported_readers_ez.txt $(srcdir)/Info.plist.src --target=$(CCID_LIB) --version=$(VERSION) $(NOCLASS) > Info.plist
 
 CLEANFILES = tokenparser.c Info.plist
 
@@ -92,7 +92,8 @@ install_ccid: libccid.la Info.plist
 	$(mkinstalldirs) "$(DESTDIR)$(usbdropdir)/$(CCID_BUNDLE)/Contents/$(BUNDLE_HOST)/"
 	cp Info.plist "$(DESTDIR)$(usbdropdir)/$(CCID_BUNDLE)/Contents/"
 	cp .libs/$(CCID_LIB) "$(DESTDIR)$(usbdropdir)/$(CCID_BUNDLE)/Contents/$(BUNDLE_HOST)/$(CCID_LIB)"
-	$(INSTALL_UDEV_RULE_FILE)
+#	TODO: Do not tell user to install udev rules
+#	$(INSTALL_UDEV_RULE_FILE)
 
 install_ccidtwin: libccidtwin.la
 	$(mkinstalldirs) "$(DESTDIR)$(ccidtwindir)"

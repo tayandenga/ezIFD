@@ -1,3 +1,89 @@
+USB EZ100PU IFD Handler
+=======================
+
+This is a fork of Ludovic Rousseau's [CCID](https://github.com/LudovicRousseau/CCID)
+to support Castles EZUSB card readers (EZ100PU).
+
+EZ100PU smartcard readers are still very popular in Taiwan (still being
+sold as of 2024), and commonly used to read NHI (health insurance) cards
+to access government services (tax payment, health insurance data, etc.).
+
+There is (was?) a binary driver at this
+[URL](https://www.castlestech.com/wp-content/uploads/2016/08/201511920271676073.zip),
+but the link is now dead (it's, however, possible to find at least one
+mirror). And I thought it'd still be nice to have an opensource driver,
+e.g. to be able to support non-x86 platforms, and generally, avoid running
+untrusted binaries.
+
+I only attempted to replicate enough of the driver to support the basic
+features required by the NHI service
+[mLNHIICC](https://eservice.nhi.gov.tw/Personal1/System/HealthCard.aspx),
+and from basic testing, this seems to be the case.
+
+I aimed to keep support for CCID-compliant readers in this codebase, but
+I disabled all other readers, and the driver is, by default, installed in
+a different path (`/usr/lib/pcsc/drivers/ifd-ezccid.bundle/`, vs
+`ifd-ccid.bundle`) so that the 2 IFD handlers can coexist.
+
+Install
+=======
+```sh
+git clone --recursive https://github.com/drinkcat/ezCCID.git
+cd CCID
+autoreconf --install
+./configure
+ make
+sudo make install
+```
+
+Restart `pcscd`.
+
+If something goes wrong, manually running `pcscd` with `pcscd -f -d` should
+give more information. Feel free to file a new
+[issue](https://github.com/drinkcat/ezCCID/issues/new), including as
+many details as possible.
+
+Technical details
+=================
+I started an implementation from scratch in
+[this repo](https://github.com/drinkcat/openez), but as I was going, I
+started to realize that a lot of the protocol looks _very_ similar to
+standard USB CCID.
+
+So instead, I went and hacked the CCID code to make it support the reader.
+The fork is [here](https://github.com/drinkcat/CCID/commits/dirty/), `dirty`
+branch. Changes I had to make:
+ - The reader doesn't advertise CCID class in
+ [USB descriptor](https://gist.github.com/drinkcat/a77504e3ee4d515aae8dd0242565c614#file-lsusb),
+ so I had to skip a few check, and manually return a fake CCID desciptor in
+ `get_ccid_device_descriptor` (copied the values from Castle's EZCCID, no
+ idea if any of this is correct...)
+ - The endianess of `dwLength` field is... flipped. It's big endian instead
+ of little endian. I hacked `i2dw` and `cmd_dw2i`. I'm not sure if any of the
+ other fields are flipped...
+- When responding to the power up command (`62h`), the returned ATR is
+prefixed by a `0x00`.
+
+And that's... basically it. With those changes, I could get `pcsc_scan -s`
+to work with a bunch of random cards I have, and, most importantly for my
+purpose, the NHI service appears to work and I can login on one of the websites.
+
+I also dumped USB traces and compared logs between the binary driver and my
+hacked driver when using `pcsc_scan`. Some minor differences (see
+[gist](https://gist.github.com/drinkcat/a77504e3ee4d515aae8dd0242565c614)
+for details):
+ - The binary driver sends a `60h` command (NULL command?) on init, and gets
+ back some identification string for the device.
+ - The binary driver use `62h/PC_to_RDR_IccPowerOff` to poll for card status.
+ The hacked driver uses `65h/PC_to_RDR_GetSlotStatus`, but that seems to work
+ too.
+ - The binary driver uses automatic voltage (`0x00`) in `62h/PC_to_RDR_IccPowerOn`
+ but the hacked driver forces 5V (`0x01`). That's fine I guess.
+ - Command order is a bit different, but that doesn't seem to matter.
+
+Original readme follows
+=======================
+
 USB CCID IFD Handler
 ====================
 

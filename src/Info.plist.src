@@ -94,10 +94,10 @@
 	-->
 
 	<key>ifdManufacturerString</key>
-	<string>Ludovic Rousseau (ludovic.rousseau@free.fr)</string>
+	<string>Nicolas Boichat <nicolas@boichat.ch>, Ludovic Rousseau (ludovic.rousseau@free.fr)</string>
 
 	<key>ifdProductString</key>
-	<string>Generic CCID driver</string>
+	<string>ezCCID driver (CCID fork for EZUSB/EZ100PU)</string>
 
 	<key>ifdVendorID</key>
 	<array>

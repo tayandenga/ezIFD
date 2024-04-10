@@ -163,9 +163,9 @@ AS_IF(
 # --enable-bundle=NAME
 AC_ARG_ENABLE(bundle,
 	AS_HELP_STRING([--enable-bundle=NAME],[bundle directory name
-	(default ifd-ccid.bundle)]),
+	(default ifd-ezccid.bundle)]),
 	[bundle="${enableval}"], [bundle=false])
-AS_IF([test "${bundle}" = false], [bundle="ifd-ccid.bundle"])
+AS_IF([test "${bundle}" = false], [bundle="ifd-ezccid.bundle"])
 AC_DEFINE_UNQUOTED(BUNDLE, "$bundle", [bundle directory name])
 
 # --enable-usbdropdir=DIR
@@ -268,7 +268,7 @@ AS_IF([test x$use_zlp = xyes],
 # --enable-ezusb
 AC_ARG_ENABLE(ezusb,
   AS_HELP_STRING([--enable-ezusb],[enable EZUSB/EZ100PU support]),
-  [ use_ezusb="${enableval}" ])
+  [ use_ezusb="${enableval}" ], [use_ezusb=yes]) # Enable by default
 
 AS_IF([test x$use_ezusb = xyes],
 	[AC_DEFINE(ENABLE_EZUSB, 1, [Enable EZUSB/EZ100PU support])])
