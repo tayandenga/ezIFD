@@ -66,7 +66,7 @@ LT_INIT
 AC_SUBST(LIBTOOL_DEPS)
 
 # Checks for header files.
-AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h unistd.h termios.h string.h sys/time.h sys/types.h stdarg.h arpa/inet.h stdio.h,,
+AC_CHECK_HEADERS(ctype.h errno.h fcntl.h stdlib.h unistd.h termios.h string.h sys/time.h sys/types.h stdarg.h arpa/inet.h stdio.h,,
 	[AC_MSG_ERROR([some header files not found])])
 
 # Checks for typedefs, structures, and compiler characteristics.

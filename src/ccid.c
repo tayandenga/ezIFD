@@ -31,6 +31,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
+#endif
 
 #include <pcsclite.h>
 #include <ifdhandler.h>
@@ -85,7 +88,21 @@ int ccid_open_hack_pre(unsigned int reader_index)
 #ifdef ENABLE_EZUSB
 		case CASTLE_EZUSB:
 			ccid_descriptor->ezusb = true;
+			{
+			unsigned char id[128];
+			unsigned int length = sizeof(id)-1;
+			int i;
+
 			DEBUG_INFO1("EZUSB workarounds");
+			if (CmdNull(reader_index, &length, id) == IFD_SUCCESS) {
+				id[length] = '\0';
+				for (i = 0; i < length; i++) {
+					if (!isprint(id[i]))
+						id[i] = '?';
+				}
+				DEBUG_INFO2("EZUSB reader ID: %s", id);
+			}
+			}
 			break;
 #endif
 

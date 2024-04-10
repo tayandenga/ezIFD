@@ -64,3 +64,6 @@ RESPONSECODE SetParameters(unsigned int reader_index, char protocol,
 
 int isCharLevel(int reader_index);
 
+RESPONSECODE CmdNull(unsigned int reader_index, unsigned int * nlength,
+	/*@out@*/ unsigned char buffer[]);
+

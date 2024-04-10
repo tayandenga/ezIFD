@@ -2376,6 +2376,51 @@ int isCharLevel(int reader_index)
 	return CCID_CLASS_CHARACTER == (get_ccid_descriptor(reader_index)->dwFeatures & CCID_CLASS_EXCHANGE_MASK);
 } /* isCharLevel */
 
+/*****************************************************************************
+ *
+ *					Send a NULL command (not really in CCID spec)
+ *
+ ****************************************************************************/
+RESPONSECODE CmdNull(unsigned int reader_index, unsigned int * nlength,
+	/*@out@*/ unsigned char buffer[])
+{
+	unsigned char cmd[256];
+	int bSeq;
+	_ccid_descriptor *ccid_descriptor = get_ccid_descriptor(reader_index);
+	status_t res;
+	unsigned int length, id_len;
+
+	bSeq = (*ccid_descriptor->pbSeq)++;
+	cmd[0] = 0x60; /* NULL */
+	set_length(0, cmd, ccid_descriptor);
+	cmd[5] = ccid_descriptor->bCurrentSlotIndex;	/* slot number */
+	cmd[6] = bSeq;
+	cmd[7] = 0;
+	cmd[8] = cmd[9] = 0; /* RFU */
+
+	res = WritePort(reader_index, 10, cmd);
+	CHECK_STATUS(res)
+
+	length = sizeof(cmd);
+	res = ReadPort(reader_index, &length, cmd, bSeq);
+	CHECK_STATUS(res)
+
+	if (length < CCID_RESPONSE_HEADER_SIZE)
+	{
+		DEBUG_CRITICAL2("Not enough data received: %d bytes", length);
+		return IFD_COMMUNICATION_ERROR;
+	}
+
+	id_len = get_length(cmd, ccid_descriptor);
+	if (id_len > *nlength)
+		id_len = *nlength;
+
+	*nlength = id_len;
+
+	memcpy(buffer, cmd+10, id_len);
+
+	return IFD_SUCCESS;
+} /* CmdNull */
 
 /*****************************************************************************
  *

@@ -35,6 +35,7 @@
 #include <config.h>
 #include "misc.h"
 #include "ccid.h"
+#include "commands.h"
 #include "debug.h"
 #include "defs.h"
 #include "utils.h"
@@ -859,11 +860,13 @@ again:
 					usbDevice[reader_index].multislot_extension = NULL;
 
 				libusb_free_config_descriptor(config_desc);
+
 				goto end;
 			}
 		}
 	}
 end:
+
 	if (usbDevice[reader_index].dev_handle == NULL)
 	{
 		/* free the libusb allocated list & devices */
