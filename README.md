@@ -1,5 +1,5 @@
-USB EZ100PU IFD Handler
-=======================
+EZ100PU/EZUSB IFD Handler
+=========================
 
 This is a fork of Ludovic Rousseau's [CCID](https://github.com/LudovicRousseau/CCID)
 to support Castles EZUSB card readers (EZ100PU).
@@ -22,13 +22,13 @@ and from basic testing, this seems to be the case.
 
 I aimed to keep support for CCID-compliant readers in this codebase, but
 I disabled all other readers, and the driver is, by default, installed in
-a different path (`/usr/lib/pcsc/drivers/ifd-ezccid.bundle/`, vs
+a different path (`/usr/lib/pcsc/drivers/ifd-ez.bundle/`, vs
 `ifd-ccid.bundle`) so that the 2 IFD handlers can coexist.
 
 Install
 =======
 ```sh
-git clone --recursive https://github.com/drinkcat/ezCCID.git
+git clone --recursive https://github.com/drinkcat/ezIFD.git
 cd CCID
 autoreconf --install
 ./configure

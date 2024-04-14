@@ -1,5 +1,5 @@
 #
-# List of readers supported by the ezCCID driver
+# List of readers supported by the ezIFD driver
 
 # CASTLES
 0x0CA6:0x0010:CASTLES EZUSB Smart Card Reader

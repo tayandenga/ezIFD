@@ -163,9 +163,9 @@ AS_IF(
 # --enable-bundle=NAME
 AC_ARG_ENABLE(bundle,
 	AS_HELP_STRING([--enable-bundle=NAME],[bundle directory name
-	(default ifd-ezccid.bundle)]),
+	(default ifd-ez.bundle)]),
 	[bundle="${enableval}"], [bundle=false])
-AS_IF([test "${bundle}" = false], [bundle="ifd-ezccid.bundle"])
+AS_IF([test "${bundle}" = false], [bundle="ifd-ez.bundle"])
 AC_DEFINE_UNQUOTED(BUNDLE, "$bundle", [bundle directory name])
 
 # --enable-usbdropdir=DIR

@@ -97,7 +97,7 @@
 	<string>Nicolas Boichat <nicolas@boichat.ch>, Ludovic Rousseau (ludovic.rousseau@free.fr)</string>
 
 	<key>ifdProductString</key>
-	<string>ezCCID driver (CCID fork for EZUSB/EZ100PU)</string>
+	<string>ezIFD driver (CCID fork for EZUSB/EZ100PU)</string>
 
 	<key>ifdVendorID</key>
 	<array>

@@ -126,7 +126,7 @@ then
 	CONFIGURE_ARGS="$CONFIGURE_ARGS --disable-class"
 
 	# use a specific bundle name to NOT overwrite the official CCID driver
-	CONFIGURE_ARGS="$CONFIGURE_ARGS --enable-bundle=ifd-ezccid-$BUNDLE_ID.bundle"
+	CONFIGURE_ARGS="$CONFIGURE_ARGS --enable-bundle=ifd-ez-$BUNDLE_ID.bundle"
 
 	# differentiate each libccid library by the dynamic linker
 	CONFIGURE_ARGS="$CONFIGURE_ARGS	--prefix=/fake/$BUNDLE_ID"

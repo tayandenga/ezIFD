@@ -4,7 +4,7 @@ INSTALLATION PROCEDURE
 Installation from git repo:
 """""""""""""""""""""""""""
 
-$ git clone --recursive https://github.com/drinkcat/ezCCID.git
+$ git clone --recursive https://github.com/drinkcat/ezIFD.git
 $ cd CCID
 $ autoreconf --install
 $ ./configure
@@ -110,7 +110,7 @@ Test procedure:
   Bus 001 Device 048: ID 08e6:4433 Gemplus
 
   Look for 08E6 (ifdVendorID) and 4433 (ifdProductID) in
-  /usr/local/pcsc/drivers/ifd-ezccid.bundle/Contents/Info.plist
+  /usr/local/pcsc/drivers/ifd-ez.bundle/Contents/Info.plist
   Of course your numbers will be different.
 
   If you can't find them add them (if you know what you do) and/or mail me.
