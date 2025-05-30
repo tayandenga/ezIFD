@@ -47,7 +47,7 @@ extern int DriverOptions;
  * The maximum number of readers is also limited in pcsc-lite (16 by default)
  * see the definition of PCSCLITE_MAX_READERS_CONTEXTS in src/PCSC/pcsclite.h
  */
-#define CCID_DRIVER_MAX_READERS 16
+#define CCID_DRIVER_MAX_READERS 64
 
 /*
  * CCID driver specific functions
